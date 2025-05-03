@@ -1,0 +1,4 @@
+[project]
+name = "birdbox"
+version = "0.1.0"
+description = "Modular bird display system using Raspberry Pi and e-Ink."
