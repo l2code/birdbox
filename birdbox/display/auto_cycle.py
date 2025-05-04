@@ -47,7 +47,12 @@ GPIO.setup(BUTTON_PIN, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
 def button_cycle_birds(mock=False):
     global index
-
+    if not mock:
+        epd_driver = import_module(DISPLAY_DRIVER)
+        epd = epd_driver.EPD()
+        epd.init()
+    else:
+        epd = None
     print("Waiting for button press to cycle birds...")
 
     try:
@@ -56,7 +61,7 @@ def button_cycle_birds(mock=False):
                 bird = birds[index]
                 print(f"Button pressed! Displaying: {bird['name']}")
                 output_path = f"output/mock/bird_display_{index}.png" if mock else None
-                render_bird_display(bird, image_path=bird["image_path"], mock=mock, output_path=output_path)
+                render_bird_display(bird, image_path=bird["image_path"], mock=mock, output_path=output_path,epd=epd)
                 index = (index + 1) % len(birds)
                 time.sleep(0.5)  # debounce delay
     except KeyboardInterrupt:
