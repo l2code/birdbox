@@ -2,6 +2,7 @@
 import time
 import os
 import argparse
+from importlib import import_module
 from birdbox.display.render_dynamic import render_bird_display
 
 # List of birds to cycle through
