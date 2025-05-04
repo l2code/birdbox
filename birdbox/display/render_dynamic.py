@@ -5,7 +5,7 @@ from importlib import import_module
 from birdbox.config import DISPLAY_DRIVER, DISPLAY_WIDTH as WIDTH, DISPLAY_HEIGHT as HEIGHT, WAVESHARE_LIB_PATH
 
 # Add the Waveshare driver path to sys.path dynamically
-lib_path = os.path.abspath(os.path.join(os.path.dirname(__file__), WAVESHARE_LIB_PATH))
+lib_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../external/lib'))
 sys.path.append(lib_path)
 
 def draw_wrapped_text(draw, text, font, x, y, max_width, line_spacing=4, fill=0):

@@ -59,9 +59,12 @@ def auto_cycle_birds(interval_sec=10, mock=True):
         #GPIO.cleanup()
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Cycle bird display on e-ink")
-    parser.add_argument("--mock", action="store_true", help="Run in mock (no hardware) mode")
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--mock", action="store_true", help="Enable mock mode")
+    parser.add_argument("--interval", type=int, default=10, help="Time between cycles")
     args = parser.parse_args()
 
-    auto_cycle_birds(interval_sec=10, mock=args.mock)
+    auto_cycle_birds(interval_sec=args.interval, mock=args.mock)
 
