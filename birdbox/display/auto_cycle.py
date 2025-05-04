@@ -1,6 +1,7 @@
 #import RPi.GPIO as GPIO
 import time
 import os
+import argparse
 from birdbox.display.render_dynamic import render_bird_display
 
 # List of birds to cycle through
@@ -39,7 +40,7 @@ birds = [
 
 index = 0
 
-def auto_cycle_birds(interval_sec=10):
+def auto_cycle_birds(interval_sec=10, mock=True):
     global index
     print(f"Auto-cycling bird display every {interval_sec} seconds...")
     try:
@@ -49,7 +50,7 @@ def auto_cycle_birds(interval_sec=10):
             output_dir = "output/mock"
             os.makedirs(output_dir, exist_ok=True)
             output_path = os.path.join(output_dir, f"bird_display_{index}.png")
-            render_bird_display(bird, image_path=bird["image_path"], mock=True, output_path=output_path)
+            render_bird_display(bird, image_path=bird["image_path"], mock=mock, output_path=output_path)
             #render_bird_display(bird, image_path=bird["image_path"], mock=True, output_path=f"bird_display_{index}.png")  # Ensure preview image is saved as RGB
             index = (index + 1) % len(birds)
             time.sleep(interval_sec)
@@ -58,4 +59,9 @@ def auto_cycle_birds(interval_sec=10):
         #GPIO.cleanup()
 
 if __name__ == "__main__":
-    auto_cycle_birds(interval_sec=10)
+    parser = argparse.ArgumentParser(description="Cycle bird display on e-ink")
+    parser.add_argument("--mock", action="store_true", help="Run in mock (no hardware) mode")
+    args = parser.parse_args()
+
+    auto_cycle_birds(interval_sec=10, mock=args.mock)
+

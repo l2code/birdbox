@@ -56,7 +56,6 @@ def render_bird_display(bird, image_path, mock=True, output_path="bird_display_m
     draw_wrapped_text(draw_black, bird["description"], font_body, x=10, y=title_y + 120, max_width=WIDTH - image_width - 40)
 
     if mock:
-        print(f"[DEBUG] Saving preview to: {output_path}")
         preview = Image.new("RGB", (WIDTH, HEIGHT), "white")
         for y in range(HEIGHT):
             for x in range(WIDTH):
