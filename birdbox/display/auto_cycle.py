@@ -42,24 +42,23 @@ birds = [
 
 
 BUTTON_PIN = 27  # GPIO pin connected to the button (Pin 13 on Pi)
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(BUTTON_PIN, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
 def button_cycle_birds(mock=False):
     global index
 
     print("Waiting for button press to cycle birds...")
 
-    GPIO.setmode(GPIO.BCM)
-    GPIO.setup(BUTTON_PIN, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-
     try:
         while True:
-            GPIO.wait_for_edge(BUTTON_PIN, GPIO.RISING)
-            bird = birds[index]
-            print(f"Button pressed! Displaying: {bird['name']}")
-            output_path = f"output/mock/bird_display_{index}.png" if mock else None
-            render_bird_display(bird, image_path=bird["image_path"], mock=mock, output_path=output_path)
-            index = (index + 1) % len(birds)
-            time.sleep(0.5)  # debounce delay
+            if GPIO.input(BUTTON_PIN) == GPIO.LOW:
+                bird = birds[index]
+                print(f"Button pressed! Displaying: {bird['name']}")
+                output_path = f"output/mock/bird_display_{index}.png" if mock else None
+                render_bird_display(bird, image_path=bird["image_path"], mock=mock, output_path=output_path)
+                index = (index + 1) % len(birds)
+                time.sleep(0.5)  # debounce delay
     except KeyboardInterrupt:
         print("Exiting...")
     finally:
