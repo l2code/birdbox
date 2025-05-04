@@ -1,8 +1,9 @@
-#import RPi.GPIO as GPIO
+import RPi.GPIO as GPIO # type: ignore
 import time
 import os
 import argparse
 from importlib import import_module
+from birdbox.config import DISPLAY_DRIVER
 from birdbox.display.render_dynamic import render_bird_display
 
 # List of birds to cycle through
@@ -39,6 +40,31 @@ birds = [
     }
 ]
 
+
+BUTTON_PIN = 27  # GPIO pin connected to the button (Pin 13 on Pi)
+
+def button_cycle_birds(mock=False):
+    global index
+
+    print("Waiting for button press to cycle birds...")
+
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(BUTTON_PIN, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+
+    try:
+        while True:
+            GPIO.wait_for_edge(BUTTON_PIN, GPIO.RISING)
+            bird = birds[index]
+            print(f"Button pressed! Displaying: {bird['name']}")
+            output_path = f"output/mock/bird_display_{index}.png" if mock else None
+            render_bird_display(bird, image_path=bird["image_path"], mock=mock, output_path=output_path)
+            index = (index + 1) % len(birds)
+            time.sleep(0.5)  # debounce delay
+    except KeyboardInterrupt:
+        print("Exiting...")
+    finally:
+        GPIO.cleanup()
+
 index = 0
 
 def auto_cycle_birds(interval_sec=10, mock=True):
@@ -57,7 +83,7 @@ def auto_cycle_birds(interval_sec=10, mock=True):
             output_dir = "output/mock"
             os.makedirs(output_dir, exist_ok=True)
             output_path = os.path.join(output_dir, f"bird_display_{index}.png")
-            render_bird_display(bird, image_path=bird["image_path"], mock=mock, output_path=output_path,epd=None)
+            render_bird_display(bird, image_path=bird["image_path"], mock=mock, output_path=output_path,epd=epd)
             #render_bird_display(bird, image_path=bird["image_path"], mock=True, output_path=f"bird_display_{index}.png")  # Ensure preview image is saved as RGB
             index = (index + 1) % len(birds)
             time.sleep(interval_sec)
@@ -82,5 +108,6 @@ if __name__ == "__main__":
     parser.add_argument("--interval", type=int, default=10, help="Time between cycles")
     args = parser.parse_args()
 
-    auto_cycle_birds(interval_sec=args.interval, mock=args.mock)
+    #auto_cycle_birds(interval_sec=args.interval, mock=args.mock)
+    button_cycle_birds(mock=args.mock)
 
