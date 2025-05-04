@@ -17,7 +17,7 @@ def draw_wrapped_text(draw, text, font, x, y, max_width, line_spacing=4, fill=0)
         line_height = bbox[3] - bbox[1]
         y += line_height + line_spacing
 
-def render_bird_display(bird, image_path, mock=True, output_path="bird_display_mock.png"):
+def render_bird_display(bird, image_path, mock=True, output_path="bird_display_mock.png", epd=None):
     black_img = Image.new('1', (WIDTH, HEIGHT), 255)
     red_img = Image.new('1', (WIDTH, HEIGHT), 255)
 
@@ -66,13 +66,19 @@ def render_bird_display(bird, image_path, mock=True, output_path="bird_display_m
         preview = preview.convert("RGB")  # Ensure compatible format for thumbnail generation
         preview.save(output_path)
         print(f"Mock display saved to {output_path}")
-        #preview.show()
         preview.show(title=bird["name"])
-        #os.system(f"xdg-open {output_path}")
+
     else:
-        epd_driver = import_module(DISPLAY_DRIVER)
-        epd = epd_driver.EPD()
-        epd.init()
+        #epd_driver = import_module(DISPLAY_DRIVER)
+        #epd = epd_driver.EPD()
+        #print("[DEBUG] Initializing EPD...")
+        #epd.init()
+
+        print("[DEBUG] Clearing display...")
         epd.Clear()
+
+        print("[DEBUG] Sending image buffers to display...")
         epd.display(epd.getbuffer(black_img), epd.getbuffer(red_img))
-        epd.sleep()
+
+        print("[DEBUG] Display update complete")
+        #epd.sleep()

@@ -42,6 +42,12 @@ index = 0
 
 def auto_cycle_birds(interval_sec=10, mock=True):
     global index
+    if not mock:
+        epd_driver = import_module(DISPLAY_DRIVER)
+        epd = epd_driver.EPD()
+        epd.init()
+    else:
+        epd = None
     print(f"Auto-cycling bird display every {interval_sec} seconds...")
     try:
         while True:
@@ -50,13 +56,22 @@ def auto_cycle_birds(interval_sec=10, mock=True):
             output_dir = "output/mock"
             os.makedirs(output_dir, exist_ok=True)
             output_path = os.path.join(output_dir, f"bird_display_{index}.png")
-            render_bird_display(bird, image_path=bird["image_path"], mock=mock, output_path=output_path)
+            render_bird_display(bird, image_path=bird["image_path"], mock=mock, output_path=output_path,epd=None)
             #render_bird_display(bird, image_path=bird["image_path"], mock=True, output_path=f"bird_display_{index}.png")  # Ensure preview image is saved as RGB
             index = (index + 1) % len(birds)
             time.sleep(interval_sec)
     except KeyboardInterrupt:
         print("Exiting...")
         #GPIO.cleanup()
+    # finally:
+    #     if not mock:
+    #         from importlib import import_module
+    #         epd_driver = import_module(DISPLAY_DRIVER)
+    #         epd = epd_driver.EPD()
+    #         epd.sleep()
+    finally:
+        if not mock and epd:
+            epd.sleep()
 
 if __name__ == "__main__":
     import argparse
